@@ -1,15 +1,17 @@
-# Contribution [#]: [Issue Title]
+# Contribution 1: WinGet Service — Add ReleaseDate
 
-**Contribution Number:** [1 / 2 / 3]  
-**Student:** [Your Name]  
-**Issue:** [GitHub issue link]  
-**Status:** [Phase I / Phase II / Phase III / Phase IV] [In Progress / Complete]
+**Contribution Number:** 1  
+**Student:** Dunsin Komolafe  
+**Issue:** [#11285 — WinGet Service: add ReleaseDate](https://github.com/badges/shields/issues/11285)  
+**Status:** Phase I — In Progress
 
 ---
 
 ## Why I Chose This Issue
 
-[1-2 paragraphs explaining why this issue interests you, how it matches your skills/learning goals, what you hope to learn]
+I chose this issue because it's a well-scoped, self-contained feature addition to an existing service — a good fit for a first open source contribution. The WinGet badge already works, so I'm not starting from scratch; instead I need to understand an established pattern and extend it responsibly. That balance of "enough existing structure to learn from, but enough novelty to be a real contribution" felt right.
+
+I also wanted hands-on experience with a real-world codebase that uses GraphQL, Joi schema validation, and a test-first culture. This issue requires me to make two GitHub GraphQL calls and parse YAML, which pushes me beyond simple REST badge additions and gives me a more complete picture of how shields.io services are architected.
 
 ---
 
@@ -17,19 +19,21 @@
 
 ### Problem Description
 
-[In your own words, what's broken or missing?]
+The WinGet badge (`shields.io/winget/v/{name}`) currently only exposes the latest version number of a package. WinGet manifests contain a `ReleaseDate` field, but there is no badge endpoint that surfaces it. Users who want to display when a package was last released have no option.
 
 ### Expected Behavior
 
-[What should happen?]
+A new badge endpoint — `shields.io/winget/release-date/{name}` — should exist and display the release date of the latest version of a WinGet package, sourced from the manifest YAML in the `microsoft/winget-pkgs` repository.
 
 ### Current Behavior
 
-[What actually happens?]
+No `release-date` endpoint exists for WinGet. Only `winget/v/{name}` (version) is available.
 
 ### Affected Components
 
-[Which parts of the codebase are involved?]
+- `services/winget/winget-version.service.js` — existing version badge (reference for the pattern)
+- `services/winget/` directory — new files will be added here
+- GitHub GraphQL API — the data source (the `microsoft/winget-pkgs` repo)
 
 ---
 
@@ -37,19 +41,19 @@
 
 ### Environment Setup
 
-[Notes on setting up your local development environment - challenges you faced, how you solved them]
+Forked and cloned the `badges/shields` repository locally. The project requires Node.js and uses `npm` for dependency management. No special environment secrets are needed to browse the WinGet service code; a GitHub token would be needed to run live service tests against the GraphQL API.
 
 ### Steps to Reproduce
 
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+1. Visit `https://img.shields.io/winget/v/Microsoft.WSL` — the version badge works correctly
+2. Visit `https://img.shields.io/winget/release-date/Microsoft.WSL` — no such endpoint exists
+3. Observed result: 404 / unknown badge
 
 ### Reproduction Evidence
 
-- **Commit showing reproduction:** [Link to commit in your fork]
-- **Screenshots/logs:** [If applicable]
-- **My findings:** [What you discovered during reproduction]
+- **Commit showing reproduction:** [To be added]
+- **Screenshots/logs:** N/A — the endpoint simply does not exist
+- **My findings:** After reading `winget-version.service.js`, I confirmed the service uses GitHub GraphQL to list version directories in `microsoft/winget-pkgs` but never reads the YAML manifest file contents where `ReleaseDate` lives. A second GraphQL call fetching blob content is required.
 
 ---
 
@@ -57,30 +61,44 @@
 
 ### Analysis
 
-[Your analysis of the root cause - what's causing the issue?]
+The root cause is simply that no one has built this badge yet. The `winget-version.service.js` service lists directory names via GraphQL but never fetches file contents, so `ReleaseDate` — which lives inside the manifest YAML — is not accessible with the current query. Adding it requires a second GraphQL call that reads the blob content of the `.yaml` file for the latest version.
 
 ### Proposed Solution
 
-[High-level description of your fix approach]
+Create a new `winget-release-date.service.js` that:
+1. Reuses the same version-finding logic as `winget-version.service.js` (first GraphQL call)
+2. Makes a second GraphQL call to fetch the blob text of the manifest YAML for the latest version
+3. Parses `ReleaseDate` from the YAML text
+4. Returns the result via `renderDateBadge`
 
 ### Implementation Plan
 
 Using UMPIRE framework (adapted):
 
-**Understand:** [Restate the problem]
+**Understand:** The WinGet badge needs a new endpoint that displays the release date of the latest version of a package. The date lives in a YAML file inside the `microsoft/winget-pkgs` GitHub repo and is not currently fetched.
 
-**Match:** [What similar patterns/solutions exist in the codebase?]
+**Match:** The multi-badge pattern used by `services/vaadin-directory/` (shared base + separate service files per field) and `services/npm/` is the right model. The `renderDateBadge` helper from `services/date.js` handles date badge formatting. The GitHub GraphQL blob content query (using `... on Blob { text }`) is the mechanism for reading file contents.
 
-**Plan:** [Step-by-step implementation plan]
-1. [Modify file X to do Y]
-2. [Add function Z]
-3. [Update tests]
+**Plan:**
+1. Create `services/winget/winget-release-date.service.js` extending `GithubAuthV4Service`
+2. In `fetch()` call 1: query directory listing to find the latest version (same logic as `winget-version.service.js`)
+3. In `fetch()` call 2: query `HEAD:manifests/{x}/{name}/{version}/{name}.yaml` as a blob to get file text
+4. Parse `ReleaseDate: YYYY-MM-DD` from the YAML text (simple regex or `js-yaml` if already a dependency)
+5. Return `renderDateBadge({ date })` with `label: 'release date'`
+6. Create `services/winget/winget-release-date.tester.js` with live and mocked tests
 
-**Implement:** [Link to your branch/commits as you work]
+**Implement:** [Link to branch/commits — to be added as work progresses]
 
-**Review:** [Self-review checklist - does it follow the project's contribution guidelines?]
+**Review:**
+- [ ] Follows kebab-case file naming
+- [ ] Class name is PascalCase (`WingetReleaseDate`)
+- [ ] `static category` set to `'other'`
+- [ ] `static openApi` block included
+- [ ] Joi schema validates only the fields used
+- [ ] Tests cover live call, mocked happy path, and error cases
+- [ ] PR title includes `[WinGet]`
 
-**Evaluate:** [How will you verify it works?]
+**Evaluate:** Run `npm run test:services -- --only=winget` and confirm both the existing version tests and new release-date tests pass. Manually verify the badge renders correctly at the local dev server.
 
 ---
 
@@ -88,50 +106,51 @@ Using UMPIRE framework (adapted):
 
 ### Unit Tests
 
-- [ ] Test case 1: [Description]
-- [ ] Test case 2: [Description]
-- [ ] Test case 3: [Description]
+- [ ] Valid date is parsed correctly from YAML text
+- [ ] Missing `ReleaseDate` field in YAML throws a handled error
+- [ ] Package not found (null entries) throws `InvalidParameter`
 
 ### Integration Tests
 
-- [ ] Integration scenario 1
-- [ ] Integration scenario 2
+- [ ] Live test: `Microsoft.WSL` returns a badge with label `release date` and a valid date message
+- [ ] Mocked test: known YAML fixture returns the exact expected date string
+- [ ] Mocked test: package with no versions returns `no versions found`
 
 ### Manual Testing
 
-[What you tested manually and results]
+[To be completed — will verify badge renders at local dev server with `npm start`]
 
 ---
 
 ## Implementation Notes
 
-### Week [X] Progress
+### Week 1 Progress
 
-[What you built this week, challenges faced, decisions made]
-
-### Week [Y] Progress
-
-[Continue documenting as you work]
+Explored the codebase to understand the existing WinGet service before writing any code. Key findings:
+- The current service uses GitHub GraphQL (not a REST API) because WinGet packages are YAML files in a GitHub repo
+- It only reads directory names/file names — never file contents — so `ReleaseDate` is not accessible with the existing query
+- A second GraphQL call using `... on Blob { text }` is needed to read the manifest YAML
+- The multi-badge pattern (separate `.service.js` files per field) is the established convention in this codebase
+- `renderDateBadge` from `services/date.js` is the correct renderer to use
 
 ### Code Changes
 
-- **Files modified:** [List]
-- **Key commits:** [Links to important commits]
-- **Approach decisions:** [Why you chose certain approaches]
+- **Files modified:** None yet (Phase I — understanding only)
+- **Key commits:** [To be added]
+- **Approach decisions:** Decided against creating a shared base class since the two services (version and release-date) require different fetching logic; a standalone new service file is cleaner
 
 ---
 
 ## Pull Request
 
-**PR Link:** [GitHub PR URL when submitted]
+**PR Link:** [To be added when submitted]
 
-**PR Description:** [Draft or final PR description - much of the content above can be adapted]
+**PR Description:** [To be drafted — title will be `[WinGet] Add release date badge`]
 
 **Maintainer Feedback:**
-- [Date]: [Summary of feedback received]
-- [Date]: [How you addressed it]
+- [To be added]
 
-**Status:** [Awaiting review / Iterating / Approved / Merged]
+**Status:** Not yet submitted
 
 ---
 
@@ -139,20 +158,22 @@ Using UMPIRE framework (adapted):
 
 ### Technical Skills Gained
 
-[What you learned technically]
+[To be completed at end of contribution]
 
 ### Challenges Overcome
 
-[What was hard and how you solved it]
+[To be completed at end of contribution]
 
 ### What I'd Do Differently Next Time
 
-[Reflection on your process]
+[To be completed at end of contribution]
 
 ---
 
 ## Resources Used
 
-- [Link to helpful documentation]
-- [Tutorial or Stack Overflow post that helped]
-- [GitHub issues or discussions that helped]
+- [shields.io CONTRIBUTING.md](https://github.com/badges/shields/blob/master/CONTRIBUTING.md)
+- [Issue #11285 — WinGet Service: add ReleaseDate](https://github.com/badges/shields/issues/11285)
+- [GitHub GraphQL API docs — querying blob content](https://docs.github.com/en/graphql/reference/objects#blob)
+- [shields.io service-tests.md](https://github.com/badges/shields/blob/master/doc/service-tests.md)
+- [Vaadin Directory release-date service — pattern reference](https://github.com/badges/shields/blob/master/services/vaadin-directory/vaadin-directory-release-date.service.js)
