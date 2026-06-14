@@ -48,6 +48,7 @@ Forked and cloned the `badges/shields` repository locally. The project requires 
 1. Visit `https://img.shields.io/winget/v/Microsoft.WSL` — the version badge works correctly
 2. Visit `https://img.shields.io/winget/release-date/Microsoft.WSL` — no such endpoint exists
 3. Observed result: 404 / unknown badge
+4. reproduce locally with a github token and npm run badge
 
 ### Reproduction Evidence
 
