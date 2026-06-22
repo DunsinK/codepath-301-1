@@ -144,14 +144,14 @@ Explored the codebase to understand the existing WinGet service before writing a
 
 ## Pull Request
 
-**PR Link:** [To be added when submitted]
+**PR Link:** (https://github.com/badges/shields/pull/11919)
 
-**PR Description:** [To be drafted — title will be `[WinGet] Add release date badge`]
+**PR Description:** [WinGet] Add release date badge`]
 
 **Maintainer Feedback:**
-- [To be added]
+- "These tests are a little hard to follow. Could we use simpler fixtures, with just the required number of entries needed to exercise the logic?"
 
-**Status:** Not yet submitted
+**Status:** Still in progress
 
 ---
 
