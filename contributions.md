@@ -3,7 +3,7 @@
 **Contribution Number:** 1  
 **Student:** Dunsin Komolafe  
 **Issue:** [#11285 — WinGet Service: add ReleaseDate](https://github.com/badges/shields/issues/11285)  
-**Status:** Phase I — In Progress
+**Status:** Phase 3 — In Progress
 
 ---
 
@@ -178,3 +178,11 @@ Explored the codebase to understand the existing WinGet service before writing a
 - [GitHub GraphQL API docs — querying blob content](https://docs.github.com/en/graphql/reference/objects#blob)
 - [shields.io service-tests.md](https://github.com/badges/shields/blob/master/doc/service-tests.md)
 - [Vaadin Directory release-date service — pattern reference](https://github.com/badges/shields/blob/master/services/vaadin-directory/vaadin-directory-release-date.service.js)
+
+# Contribution 1: WinGet Service — Add ReleaseDate
+
+**Contribution Number:** 2  
+**Student:** Dunsin Komolafe  
+**Issue:** Llama.cpp
+**Status:** Phase I — In Progress
+
