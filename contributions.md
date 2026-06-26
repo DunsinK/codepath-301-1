@@ -3,15 +3,13 @@
 **Contribution Number:** 1  
 **Student:** Dunsin Komolafe  
 **Issue:** [#11285 — WinGet Service: add ReleaseDate](https://github.com/badges/shields/issues/11285)  
-**Status:** Phase 3 — In Progress
+**Status:** Phase 4 — In Progress (waiting for maintainter response) 
 
 ---
 
 ## Why I Chose This Issue
 
-I chose this issue because it's a well-scoped, self-contained feature addition to an existing service — a good fit for a first open source contribution. The WinGet badge already works, so I'm not starting from scratch; instead I need to understand an established pattern and extend it responsibly. That balance of "enough existing structure to learn from, but enough novelty to be a real contribution" felt right.
-
-I also wanted hands-on experience with a real-world codebase that uses GraphQL, Joi schema validation, and a test-first culture. This issue requires me to make two GitHub GraphQL calls and parse YAML, which pushes me beyond simple REST badge additions and gives me a more complete picture of how shields.io services are architected.
+I chose this issue because it looked well-scoped, self-contained feature addition to an existing service. It was a good fit for a first open source contribution. The WinGet badge already works, so I'm not starting from scratch; instead I need to understand an established pattern and extend it responsibly. That balance of "enough existing structure to learn from, but enough novelty to be a real contribution" felt right. I also wanted hands-on experience with a real-world codebase that uses GraphQL, Joi schema validation, and a test-first culture. This issue requires me to make two GitHub GraphQL calls and parse YAML, which pushes me beyond simple REST badge additions and gives me a more complete picture of how shields.io services are architected.
 
 ---
 
@@ -179,10 +177,18 @@ Explored the codebase to understand the existing WinGet service before writing a
 - [shields.io service-tests.md](https://github.com/badges/shields/blob/master/doc/service-tests.md)
 - [Vaadin Directory release-date service — pattern reference](https://github.com/badges/shields/blob/master/services/vaadin-directory/vaadin-directory-release-date.service.js)
 
-# Contribution 1: WinGet Service — Add ReleaseDate
+# Contribution 2: LLama.cpp - support for orpheus
 
 **Contribution Number:** 2  
 **Student:** Dunsin Komolafe  
 **Issue:** Llama.cpp
-**Status:** Phase I — In Progress
+**Status:** Phase 2 — In Progress
+
+---
+
+## Why I Chose This Issue
+
+I chose this issue because it looked well-scoped, with just the addition for orpheus support. It was a good fit for a first open source contribution. I also wanted hands-on experience with a real-world codebase that uses C++ and logic for running AI models
+
+---
 
